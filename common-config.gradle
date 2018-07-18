@@ -1,0 +1,31 @@
+def isAndroidProject() {
+    return project.plugins.hasPlugin("com.android.application") || project.plugins.hasPlugin("com.android.library")
+}
+
+if (isAndroidProject()) {
+
+    apply plugin: 'kotlin-android'
+    apply plugin: 'kotlin-android-extensions'
+
+    dependencies {
+        implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    }
+
+    android {
+        compileSdkVersion 27
+
+        defaultConfig {
+            minSdkVersion 15
+            targetSdkVersion 27
+        }
+
+        lintOptions {
+            abortOnError false
+        }
+
+        compileOptions {
+            sourceCompatibility JavaVersion.VERSION_1_8
+            targetCompatibility JavaVersion.VERSION_1_8
+        }
+    }
+}

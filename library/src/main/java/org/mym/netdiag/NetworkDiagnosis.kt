@@ -1,5 +1,7 @@
 package org.mym.netdiag
 
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import kotlin.concurrent.thread
 
@@ -19,7 +21,17 @@ object NetworkDiagnosis {
     /**
      * Use this property to define your own thread logic. If not set, every task will be executed in a new thread.
      */
-    var executor: Executor = { thread(name = "NetworkDiagnosisThread") { it.invoke() } }
+    var executor: Executor = object : Executor {
+        override fun doInBackground(action: () -> Unit) {
+            thread(name = "NetworkDiagnosisThread") { action.invoke() }
+        }
+
+        override fun doInMainThread(action: () -> Unit) {
+            Handler(Looper.getMainLooper()).post {
+                action.invoke()
+            }
+        }
+    }
 
     internal fun log4Debug(content: String) {
         if (debug) {
@@ -42,15 +54,19 @@ object NetworkDiagnosis {
                              errorListener: ErrorListener? = null,
                              resultListener: ResultListener<T>) {
         log4Debug("Enqueued task $task")
-        executor.invoke {
+        executor.doInBackground {
             log4Debug("Started task $task")
             try {
                 val result = task.run(progressListener)
                 log4Debug("Task $task returned as: $result")
-                resultListener.invoke(result)
+                executor.doInMainThread {
+                    resultListener.invoke(result)
+                }
             } catch (e: Exception) {
                 log4Debug("Task $task throws an exception: $e")
-                errorListener?.invoke(e)
+                executor.doInMainThread {
+                    errorListener?.invoke(e)
+                }
             }
         }
     }

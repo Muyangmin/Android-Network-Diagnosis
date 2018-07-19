@@ -1,10 +1,14 @@
 package org.mym.netdiag.sample
 
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.support.v7.app.AppCompatActivity
 import org.mym.kotlog.GlobalTagDecorator
 import org.mym.kotlog.L
+import org.mym.netdiag.Executor
 import org.mym.netdiag.NetworkDiagnosis
+import org.mym.netdiag.tasks.GetNetInfoTask
 import java.util.concurrent.Executors
 
 class MainActivity : AppCompatActivity() {
@@ -22,13 +26,21 @@ class MainActivity : AppCompatActivity() {
             debug = true
             logger = { L.d(msg = it) }
             val pool = Executors.newFixedThreadPool(5)
-            executor = {
-                pool.submit(it)
+            executor = object : Executor {
+                override fun doInBackground(action: () -> Unit) {
+                    pool.submit(action)
+                }
+
+                override fun doInMainThread(action: () -> Unit) {
+                    Handler(Looper.getMainLooper()).post {
+                        action.invoke()
+                    }
+                }
             }
         }
 
-        NetworkDiagnosis.execute(FakeTask()) {
-            L.i("FakeTask result: $it")
+        NetworkDiagnosis.execute(GetNetInfoTask(this)) {
+            L.i("Task result: $it")
         }
     }
 }

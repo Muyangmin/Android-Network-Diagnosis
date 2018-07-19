@@ -1,7 +1,18 @@
 package org.mym.netdiag
 
 typealias Logger = (String) -> Unit
-typealias Executor = (() -> Unit) -> Unit
+
+interface Executor {
+    /**
+     * Execute [action] in a background thread.
+     */
+    fun doInBackground(action: () -> Unit)
+
+    /**
+     * Execute [action] in a main thread, i.e. UI thread.
+     */
+    fun doInMainThread(action: () -> Unit)
+}
 
 /**
  * A [ProgressListener] is used to observe task progress. Not all tasks support this kind of observing -- it depends on task implementations.

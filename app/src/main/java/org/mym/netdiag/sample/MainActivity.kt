@@ -9,6 +9,7 @@ import org.mym.kotlog.L
 import org.mym.netdiag.Executor
 import org.mym.netdiag.NetworkDiagnosis
 import org.mym.netdiag.tasks.GetNetInfoTask
+import org.mym.netdiag.tasks.IpTask
 import java.util.concurrent.Executors
 
 class MainActivity : AppCompatActivity() {
@@ -39,8 +40,12 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        NetworkDiagnosis.execute(GetNetInfoTask(this)) {
-            L.i("Task result: $it")
+        val tasks = arrayListOf(GetNetInfoTask(this), IpTask(this))
+
+        tasks.forEach { task ->
+            NetworkDiagnosis.execute(task) {
+                L.i("Task $task result: $it")
+            }
         }
     }
 }

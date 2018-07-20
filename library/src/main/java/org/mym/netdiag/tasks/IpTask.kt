@@ -7,18 +7,21 @@ import org.mym.netdiag.Result
 import org.mym.netdiag.Task
 import org.mym.netdiag.readStrFromUrl
 
-class IpTask(context: Context, private val server: String = SERVER_AKAMAI) : Task<Ip> {
-
-    companion object {
-        const val SERVER_IPIFY = "https://api.ipify.org/?format=text"
-        const val SERVER_AKAMAI = "http://whatismyip.akamai.com"
-    }
+class IpTask(context: Context, private val servers: Array<String> = arrayOf("http://whatismyip.akamai.com", "https://api.ipify.org/?format=text")) : Task<Ip> {
 
     private val appContext: Context = context.applicationContext
 
     override fun run(progressListener: ProgressListener?): Ip {
-        //TODO consider query from server list, not a single server
-        val publicIp = readStrFromUrl(server).orEmpty()
+        var publicIp = ""
+        for (index in 0 until servers.size) {
+            publicIp = readStrFromUrl(servers[index]).orEmpty()
+            if (publicIp.isEmpty()) {
+                progressListener?.invoke((index + 1) / servers.size)
+            } else {
+                break
+            }
+        }
+
         val wifiManager = appContext.getSystemService(Context.WIFI_SERVICE) as? WifiManager
         val localIpInt = wifiManager?.dhcpInfo?.ipAddress ?: UNKNOWN_IP_INT
         val localIp = intIpToString(localIpInt)

@@ -9,7 +9,7 @@ import org.mym.kotlog.L
 import org.mym.netdiag.Executor
 import org.mym.netdiag.Logger
 import org.mym.netdiag.NetworkDiagnosis
-import org.mym.netdiag.tasks.GetNetInfoTask
+import org.mym.netdiag.tasks.NetworkInfoTask
 import org.mym.netdiag.tasks.IpTask
 import org.mym.netdiag.tasks.PingTask
 import java.util.concurrent.Executors
@@ -50,7 +50,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        val tasks = arrayListOf(GetNetInfoTask(this), IpTask(this),
+        val tasks = arrayListOf(NetworkInfoTask(this), IpTask(this),
                 PingTask("www.bbb.markup"))
 
         tasks.forEach { task ->

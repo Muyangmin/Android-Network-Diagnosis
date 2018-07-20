@@ -10,10 +10,10 @@ import org.mym.netdiag.Task
 /**
  * This task detect the connectivity and network type for current device.
  */
-class GetNetInfoTask(context: Context) : Task<NetInfoResult> {
+class NetworkInfoTask(context: Context) : Task<NetworkInfoResult> {
     private val appContext: Context = context.applicationContext
 
-    override fun run(progressListener: ProgressListener?): NetInfoResult {
+    override fun run(progressListener: ProgressListener?): NetworkInfoResult {
         val connectivity = appContext.getSystemService(Context.CONNECTIVITY_SERVICE) as? ConnectivityManager
         val isConnected = connectivity?.activeNetworkInfo?.isConnected ?: false
         val isWifi = connectivity?.activeNetworkInfo?.type == ConnectivityManager.TYPE_WIFI
@@ -22,7 +22,7 @@ class GetNetInfoTask(context: Context) : Task<NetInfoResult> {
         val telephonyManager = appContext.getSystemService(Context.TELEPHONY_SERVICE) as? TelephonyManager
         val telephonyType = telephonyManager?.networkType ?: TelephonyManager.NETWORK_TYPE_UNKNOWN
 
-        return NetInfoResult(isConnected, isWifi, telephonyType)
+        return NetworkInfoResult(isConnected, isWifi, telephonyType)
     }
 
     override fun cancel() {
@@ -35,7 +35,7 @@ class GetNetInfoTask(context: Context) : Task<NetInfoResult> {
  * @property isWifi whether the current connected network (if exists) is Wi-Fi (determined by [ConnectivityManager]).
  * @property telephonyType the current telephony network type, maybe useful to predicate network speed. You can use [isFastMobileNetwork] utility method for that purpose.
  */
-data class NetInfoResult(val isConnected: Boolean, val isWifi: Boolean, val telephonyType: Int) : Result
+data class NetworkInfoResult(val isConnected: Boolean, val isWifi: Boolean, val telephonyType: Int) : Result
 
 /**
  * A Utility method to decide whether a mobile network type is *fast enough* for modern apps.

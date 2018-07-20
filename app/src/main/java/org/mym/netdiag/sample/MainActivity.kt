@@ -10,6 +10,7 @@ import org.mym.netdiag.Executor
 import org.mym.netdiag.NetworkDiagnosis
 import org.mym.netdiag.tasks.GetNetInfoTask
 import org.mym.netdiag.tasks.IpTask
+import org.mym.netdiag.tasks.PingTask
 import java.util.concurrent.Executors
 
 class MainActivity : AppCompatActivity() {
@@ -40,7 +41,8 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        val tasks = arrayListOf(GetNetInfoTask(this), IpTask(this))
+        val tasks = arrayListOf(GetNetInfoTask(this), IpTask(this),
+                PingTask("www.qq.com"))
 
         tasks.forEach { task ->
             NetworkDiagnosis.execute(task) {

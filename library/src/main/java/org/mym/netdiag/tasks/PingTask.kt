@@ -1,9 +1,6 @@
 package org.mym.netdiag.tasks
 
-import org.mym.netdiag.NetworkDiagnosis
-import org.mym.netdiag.ProgressListener
-import org.mym.netdiag.Result
-import org.mym.netdiag.Task
+import org.mym.netdiag.*
 import java.io.InputStreamReader
 
 /**
@@ -22,12 +19,11 @@ class PingTask(private val target: String, private val count: Int = 4) : Task<Pi
             val resultStr = InputStreamReader(command.inputStream).readText()
             val errorStr = InputStreamReader(command.errorStream).readText()
 
-            NetworkDiagnosis.log4Debug("Process `ping` exited with exitValue ${command.exitValue()}")
+            log4Debug("Process `ping` exited with exitValue ${command.exitValue()}")
             if (command.exitValue() != 0) {
-                //TODO use warning level instead
-                NetworkDiagnosis.log4Debug(errorStr)
+                log4Warn(errorStr)
             } else {
-                NetworkDiagnosis.log4Debug(resultStr)
+                log4Debug(resultStr)
                 return parsePingResult(resultStr)
             }
 
@@ -43,13 +39,11 @@ class PingTask(private val target: String, private val count: Int = 4) : Task<Pi
         val regex = Regex("(\\d+) packets transmitted, (\\d+) received, (\\d+)% packet loss, time (\\d+)ms[\\s\\n\\t]+rtt min/avg/max/mdev = ([\\d.]+)/([\\d.]+)/([\\d.]+)/([\\d.]+) ms")
         val matchResult = regex.findAll(resultStr).iterator()
         if (!matchResult.hasNext()) {
-            //TODO migrate log level
-            NetworkDiagnosis.log4Debug("Warning: Failed to match ping result, please issue this case via github.")
+            log4Warn("Failed to match ping result, please issue this case via github.")
         } else {
             val groups = matchResult.next().groups
             if (groups.size != 9) {
-                //TODO migrate log level
-                NetworkDiagnosis.log4Debug("Failed to match regex groups, expected 9 but actually ${groups.size}")
+                log4Warn("Failed to match regex groups, expected 9 but actually ${groups.size}")
             }
 
             val intValues = groups.filterNotNull().filterIndexed { index, _ ->
@@ -63,7 +57,7 @@ class PingTask(private val target: String, private val count: Int = 4) : Task<Pi
                 it.value.toFloatOrNull() ?: 0F
             }
 
-            NetworkDiagnosis.log4Debug("Parse ping result succeed.")
+            log4Debug("Parse ping result succeed.")
             return PingResult(intValues[0], intValues[1], intValues[2],
                     floatValues[0], floatValues[1], floatValues[2])
 

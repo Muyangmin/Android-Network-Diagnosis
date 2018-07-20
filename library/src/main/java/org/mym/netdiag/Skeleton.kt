@@ -1,6 +1,16 @@
 package org.mym.netdiag
 
-typealias Logger = (String) -> Unit
+interface Logger {
+    /**
+     * Debug information will be printed in this method.Those information is verbose for most apps, thus will not be called unless [NetworkDiagnosis.debug] is set to `true`.
+     */
+    fun debug(message: String)
+
+    /**
+     * Errors and internal exceptions will be printed in this method. These methods will always be printed.
+     */
+    fun warn(message: String)
+}
 
 interface Executor {
     /**

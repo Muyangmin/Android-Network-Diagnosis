@@ -14,8 +14,14 @@ object NetworkDiagnosis {
     /**
      * Use this property to customize your logger implementations.
      */
-    var logger: Logger = {
-        Log.v("NetworkDiagnosis", it)
+    var logger = object : Logger{
+        override fun debug(message: String) {
+            Log.d(LOG_TAG, message)
+        }
+
+        override fun warn(message: String) {
+            Log.d(LOG_TAG, message)
+        }
     }
 
     /**
@@ -30,12 +36,6 @@ object NetworkDiagnosis {
             Handler(Looper.getMainLooper()).post {
                 action.invoke()
             }
-        }
-    }
-
-    internal fun log4Debug(content: String) {
-        if (debug) {
-            logger.invoke(content)
         }
     }
 
@@ -63,7 +63,7 @@ object NetworkDiagnosis {
                     resultListener.invoke(result)
                 }
             } catch (e: Exception) {
-                log4Debug("Task $task throws an exception: $e")
+                log4Warn("Task $task throws an exception: $e")
                 executor.doInMainThread {
                     errorListener?.invoke(e)
                 }

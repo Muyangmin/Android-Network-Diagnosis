@@ -23,3 +23,13 @@ fun readStrFromUrl(url: String, readTimeout: Int = 30 * 1000, connTimeout: Int =
     reader.close()
     return content
 }
+
+internal const val LOG_TAG = "NetworkDiagnosis"
+
+internal fun log4Debug(message: String) {
+    if (NetworkDiagnosis.debug) {
+        NetworkDiagnosis.logger.debug(message)
+    }
+}
+
+internal fun log4Warn(message: String) = NetworkDiagnosis.logger.warn(message)

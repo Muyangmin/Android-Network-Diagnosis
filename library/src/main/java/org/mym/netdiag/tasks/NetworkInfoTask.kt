@@ -4,7 +4,6 @@ import android.content.Context
 import android.net.ConnectivityManager
 import android.telephony.TelephonyManager
 import org.mym.netdiag.ProgressListener
-import org.mym.netdiag.Result
 import org.mym.netdiag.Task
 
 /**
@@ -35,7 +34,7 @@ class NetworkInfoTask(context: Context) : Task<NetworkInfoResult> {
  * @property isWifi whether the current connected network (if exists) is Wi-Fi (determined by [ConnectivityManager]).
  * @property telephonyType the current telephony network type, maybe useful to predicate network speed. You can use [isFastMobileNetwork] utility method for that purpose.
  */
-data class NetworkInfoResult(val isConnected: Boolean, val isWifi: Boolean, val telephonyType: Int) : Result
+data class NetworkInfoResult(val isConnected: Boolean, val isWifi: Boolean, val telephonyType: Int)
 
 /**
  * A Utility method to decide whether a mobile network type is *fast enough* for modern apps.

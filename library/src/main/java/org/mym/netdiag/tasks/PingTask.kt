@@ -79,4 +79,4 @@ class PingTask(private val target: String, private val count: Int = 4) : Task<Pi
  * @property[maxRtt] The maximum rtt among the packets.
  */
 data class PingResult(val transmitted: Int, val received: Int, val loss: Int,
-                      val minRtt: Float, val avgRtt: Float, val maxRtt: Float) : Result
+                      val minRtt: Float, val avgRtt: Float, val maxRtt: Float)

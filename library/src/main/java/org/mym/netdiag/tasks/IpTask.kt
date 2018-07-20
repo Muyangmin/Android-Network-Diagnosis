@@ -3,7 +3,6 @@ package org.mym.netdiag.tasks
 import android.content.Context
 import android.net.wifi.WifiManager
 import org.mym.netdiag.ProgressListener
-import org.mym.netdiag.Result
 import org.mym.netdiag.Task
 import org.mym.netdiag.readStrFromUrl
 
@@ -34,7 +33,7 @@ class IpTask(context: Context, private val servers: Array<String> = arrayOf("htt
     }
 }
 
-data class Ip(val publicIp: String, val localIp: String) : Result
+data class Ip(val publicIp: String, val localIp: String)
 
 private const val UNKNOWN_IP_INT = -1
 private const val UNKNOWN_IP_STR = "Unknown IP"

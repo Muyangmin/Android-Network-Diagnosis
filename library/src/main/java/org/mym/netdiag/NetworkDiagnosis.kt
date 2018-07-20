@@ -49,10 +49,10 @@ object NetworkDiagnosis {
      */
     @JvmStatic
     @JvmOverloads
-    fun <T : Result> execute(task: Task<T>,
-                             progressListener: ProgressListener? = null,
-                             errorListener: ErrorListener? = null,
-                             resultListener: ResultListener<T>) {
+    fun <T> execute(task: Task<T>,
+                    progressListener: ProgressListener? = null,
+                    errorListener: ErrorListener? = null,
+                    resultListener: ResultListener<T>) {
         log4Debug("Enqueued task $task")
         executor.doInBackground {
             log4Debug("Started task $task")

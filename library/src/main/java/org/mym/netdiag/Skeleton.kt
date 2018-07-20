@@ -42,15 +42,6 @@ typealias ResultListener<T> = (T) -> Unit
 typealias ErrorListener = (e: Exception) -> Unit
 
 /**
- * A `Result` represents a return value of a [Task] in normal case, i.e. no exceptions occurred during executing that task.
- *
- * A concrete `Result` class can has arbitrary properties and methods, just like any other classes.
- * Those properties and methods can be directly accessed (without type cast) in [ResultListener].
- * However, it is a convention that [toString] method should be overridden to return a readable string for this result.
- */
-interface Result
-
-/**
  * A `Task` often represents a diagnosis command, e,g. `ping`.
  *
  * Tasks may need some parameters to initialize command (e.g. in constructor), and returns a specific type of [Result].
@@ -58,8 +49,13 @@ interface Result
  * Tasks may execute for long time, so some (NOT all) of them may notify progress, see [ProgressListener].
  *
  * If a task met an exception while executing, it will just throw it.
+ *
+ * @param[T] Represents a return value of a [Task] in normal case, i.e. no exceptions occurred during executing that task.
+ * A concrete result class can has arbitrary properties and methods, just like any other classes.
+ * Those properties and methods can be directly accessed (without type cast) in [ResultListener].
+ * However, it is a convention that [toString] method should be overridden to return a readable string for this result.
  */
-interface Task<T : Result> {
+interface Task<T> {
     /**
      * Implementations should define concrete task logic here.
      *

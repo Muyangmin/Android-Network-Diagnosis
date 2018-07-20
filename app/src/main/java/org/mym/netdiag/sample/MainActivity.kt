@@ -1,5 +1,6 @@
 package org.mym.netdiag.sample
 
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -12,6 +13,7 @@ import org.mym.netdiag.NetworkDiagnosis
 import org.mym.netdiag.tasks.NetworkInfoTask
 import org.mym.netdiag.tasks.IpTask
 import org.mym.netdiag.tasks.PingTask
+import org.mym.netdiag.tasks.SimpleTask
 import java.util.concurrent.Executors
 
 class MainActivity : AppCompatActivity() {
@@ -57,6 +59,14 @@ class MainActivity : AppCompatActivity() {
             NetworkDiagnosis.execute(task) {
                 L.i("Task $task result: $it")
             }
+        }
+
+        //A simple task can do its calculation in background and callback in main thread.
+        // Just like AsyncTask but you can integrate it into your preferred thread manager, e.g. RxJava.
+        NetworkDiagnosis.execute(SimpleTask {
+            Build.MODEL
+        }) {
+            L.d(it)
         }
     }
 }

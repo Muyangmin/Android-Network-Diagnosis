@@ -4,8 +4,8 @@ import org.mym.netdiag.api.ProgressListener
 import org.mym.netdiag.api.Task
 import org.mym.netdiag.log4Debug
 import org.mym.netdiag.log4Warn
+import org.mym.netdiag.readStrFromRuntimeProcess
 import org.mym.netdiag.readStrFromUrl
-import java.io.InputStreamReader
 
 /**
  * Detect public & local dns.
@@ -38,17 +38,9 @@ class DnsTask : Task<DnsServer> {
     }
 
     private fun detectPrivateDns(): List<String> {
-        val command = Runtime.getRuntime().exec("getprop")
-        command.waitFor()
-        val resultStr = InputStreamReader(command.inputStream).readText()
-        val errorStr = InputStreamReader(command.errorStream).readText()
-
-        log4Debug("Process `getprop` exited with exitValue ${command.exitValue()}")
-        if (command.exitValue() != 0) {
-            log4Warn(errorStr)
-        } else {
-            log4Debug(resultStr)
-            val dnsMatch = Regex("\\[net.dns\\d+].+\\[(\\d+\\.\\d+\\.\\d+\\.\\d+)]").findAll(resultStr).toList()
+        val getProp = readStrFromRuntimeProcess("getprop")
+        val dnsMatch = Regex("\\[net.dns\\d+].+\\[(\\d+\\.\\d+\\.\\d+\\.\\d+)]").findAll(getProp).toList()
+        if (dnsMatch.isNotEmpty()) {
             return dnsMatch.map { it.groupValues[1] }
         }
         return emptyList()

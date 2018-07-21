@@ -4,7 +4,7 @@ import org.mym.netdiag.api.ProgressListener
 import org.mym.netdiag.api.Task
 import org.mym.netdiag.log4Debug
 import org.mym.netdiag.log4Warn
-import java.io.InputStreamReader
+import org.mym.netdiag.readStrFromRuntimeProcess
 
 /**
  * This task is used to execute ping command to specified server, and resolve the text results into [PingResult].
@@ -17,25 +17,8 @@ class PingTask(private val target: String, private val count: Int = 4) : Task<Pi
     private var nativeCommand: Process? = null
 
     override fun run(progressListener: ProgressListener?): PingResult {
-        try {
-            val command = Runtime.getRuntime().exec("/system/bin/ping -c $count $target")
-            val resultStr = InputStreamReader(command.inputStream).readText()
-            val errorStr = InputStreamReader(command.errorStream).readText()
-
-            log4Debug("Process `ping` exited with exitValue ${command.exitValue()}")
-            if (command.exitValue() != 0) {
-                log4Warn(errorStr)
-            } else {
-                log4Debug(resultStr)
-                return parsePingResult(resultStr)
-            }
-
-        } catch (e: Exception) {
-            //TODO consider fallback requests
-            e.printStackTrace()
-        }
-
-        return PingResult(count, 0, 100, Float.NaN, Float.NaN, Float.NaN)
+        val pingResult = readStrFromRuntimeProcess("/system/bin/ping -c $count $target")
+        return parsePingResult(pingResult)
     }
 
     private fun parsePingResult(resultStr: String): PingResult {

@@ -24,6 +24,21 @@ fun readStrFromUrl(url: String, readTimeout: Int = 30 * 1000, connTimeout: Int =
     return content
 }
 
+fun readStrFromRuntimeProcess(cmdStr: String): String {
+    val command = Runtime.getRuntime().exec(cmdStr)
+    val exitValue = command.waitFor()
+    log4Debug("Process `$cmdStr` exited with exitValue $exitValue")
+    val resultStr = InputStreamReader(command.inputStream).readText()
+    val errorStr = InputStreamReader(command.errorStream).readText()
+    return if (exitValue != 0) {
+        log4Warn(errorStr)
+        errorStr
+    } else {
+        log4Debug(resultStr)
+        resultStr
+    }
+}
+
 internal const val LOG_TAG = "NetworkDiagnosis"
 
 internal fun log4Debug(message: String) {

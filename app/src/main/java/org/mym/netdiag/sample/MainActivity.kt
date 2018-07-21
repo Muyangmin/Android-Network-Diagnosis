@@ -53,7 +53,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         val tasks = arrayListOf(NetworkInfoTask(this), IpTask(this),
-                PingTask("www.bbb.markup"))
+                PingTask("www.baidu.com"))
 
         tasks.forEach { task ->
             NetworkDiagnosis.execute(task) {

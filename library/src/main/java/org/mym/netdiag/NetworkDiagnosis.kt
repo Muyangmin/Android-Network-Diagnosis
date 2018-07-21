@@ -69,7 +69,9 @@ object NetworkDiagnosis {
         executor.doInBackground {
             log4Debug("Started task $task")
             try {
-                taskListener?.onTaskStarted()
+                executor.doInMainThread {
+                    taskListener?.onTaskStarted()
+                }
                 val result = task.run(wrapProgressListener { taskListener?.onTaskProgressChanged(it) })
                 log4Debug("Task $task returned as: $result")
                 executor.doInMainThread {

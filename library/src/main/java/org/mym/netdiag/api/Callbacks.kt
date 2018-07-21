@@ -34,21 +34,21 @@ typealias ResultListener<T> = (T) -> Unit
 typealias ErrorListener = (e: Exception) -> Unit
 
 /**
- * Full event support for task lifecycle.
+ * Full event support for task lifecycle. All methods will called in main thread.
  */
 interface TaskListener<T> {
     /**
-     * Called when task is actually started, in a background thread.
+     * Called when task is actually started.
      */
     fun onTaskStarted()
 
     /**
-     * Called when the progress of this task changed, in main thread.
+     * Called when the progress of this task changed.
      */
     fun onTaskProgressChanged(progress: Int)
 
     /**
-     * Called when the result of this task is returned normally, in main thread.
+     * Called when the result of this task is returned normally.
      */
     fun onTaskFinished(result: T)
 

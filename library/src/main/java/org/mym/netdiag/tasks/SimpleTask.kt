@@ -1,7 +1,7 @@
 package org.mym.netdiag.tasks
 
-import org.mym.netdiag.ProgressListener
-import org.mym.netdiag.Task
+import org.mym.netdiag.api.ProgressListener
+import org.mym.netdiag.api.Task
 
 /**
  * This class is used to wrap simple actions for the task framework. Just pass the action into it.

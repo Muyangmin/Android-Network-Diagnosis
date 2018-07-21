@@ -7,8 +7,8 @@ import android.os.Looper
 import android.support.v7.app.AppCompatActivity
 import org.mym.kotlog.GlobalTagDecorator
 import org.mym.kotlog.L
-import org.mym.netdiag.Executor
-import org.mym.netdiag.Logger
+import org.mym.netdiag.api.Executor
+import org.mym.netdiag.api.Logger
 import org.mym.netdiag.NetworkDiagnosis
 import org.mym.netdiag.tasks.NetworkInfoTask
 import org.mym.netdiag.tasks.IpTask

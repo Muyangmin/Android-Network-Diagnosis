@@ -2,8 +2,8 @@ package org.mym.netdiag.tasks
 
 import android.content.Context
 import android.net.wifi.WifiManager
-import org.mym.netdiag.ProgressListener
-import org.mym.netdiag.Task
+import org.mym.netdiag.api.ProgressListener
+import org.mym.netdiag.api.Task
 import org.mym.netdiag.readStrFromUrl
 
 class IpTask(context: Context, private val servers: Array<String> = arrayOf("http://whatismyip.akamai.com", "https://api.ipify.org/?format=text")) : Task<Ip> {

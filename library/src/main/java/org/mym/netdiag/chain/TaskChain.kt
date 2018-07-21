@@ -1,6 +1,7 @@
 package org.mym.netdiag.chain
 
 import org.mym.netdiag.*
+import org.mym.netdiag.api.*
 
 /**
  * This is a bonus class to support chained check, i.e. serially execute [Task]s.
@@ -24,30 +25,50 @@ class TaskChain {
 
     private var actionList = mutableListOf<() -> Unit>()
 
+    private var currentIndex = -1
+
+    var abortCallback: (() -> Unit)? = null
+
+    var finishCallback: (() -> Unit)? = null
+
     /**
-     * Add a task into the chained call. Most parameters are same as explained in [NetworkDiagnosis.execute].
+     * Add a task into the chained call. Parameters are same as explained in [NetworkDiagnosis.execute], but you can call [abort] in resultListener or errorListener.
      *
-     * @param[decision] determine whether the chain should be aborted after the result returned.
-     * @param[errorDecision] determine whether the chain should be aborted if the task met a error.
+     * Task added into the chain will not be executed until you call [start].
      */
     fun <T> addTask(task: Task<T>,
-                             progressListener: ProgressListener? = null,
-                             errorListener: ErrorListener? = null,
-                             resultListener: ResultListener<T>,
-                             decision: (T) -> Boolean = { false },
-                             errorDecision: ((e: Exception) -> Boolean) = { false }) {
+                    startListener: StartListener? = null,
+                    progressListener: ProgressListener? = null,
+                    errorListener: ErrorListener? = null,
+                    resultListener: ResultListener<T>) {
+        addTask(task, SimpleTaskListener(startListener, progressListener, resultListener, errorListener))
+    }
+
+    fun <T> addTask(task: Task<T>, taskListener: TaskListener<T>) {
         val wrapAction = {
             if (!isAborted) {
-                NetworkDiagnosis.execute(task, progressListener, errorListener = {
-                    if (errorDecision.invoke(it)) {
-                        isAborted = true
+                NetworkDiagnosis.execute(task, object : SimpleTaskListener<T>() {
+                    override fun onTaskStarted() {
+                        taskListener.onTaskStarted()
                     }
-                    errorListener?.invoke(it)
-                }, resultListener = {
-                    if (decision.invoke(it)) {
-                        isAborted = true
+
+                    override fun onTaskProgressChanged(progress: Int) {
+                        taskListener.onTaskProgressChanged(progress)
                     }
-                    resultListener.invoke(it)
+
+                    override fun onTaskFinished(result: T) {
+                        if (!isAborted) {
+                            doNextAction()
+                            taskListener.onTaskFinished(result)
+                        }
+                    }
+
+                    override fun onTaskError(e: Exception) {
+                        if (!isAborted) {
+                            taskListener.onTaskError(e)
+                            doNextAction()
+                        }
+                    }
                 })
             }
         }
@@ -58,7 +79,17 @@ class TaskChain {
      * Start this chain. You should never call [addTask] after called this method.
      */
     fun start() {
-        actionList.forEach { it.invoke() }
+        currentIndex = -1
+        doNextAction()
+    }
+
+    private fun doNextAction() {
+        if (currentIndex + 1 < actionList.size) {
+            currentIndex++
+            actionList[currentIndex].invoke()
+        } else {
+            finishCallback?.invoke()
+        }
     }
 
     /**
@@ -66,6 +97,7 @@ class TaskChain {
      */
     fun abort() {
         isAborted = true
+        abortCallback?.invoke()
     }
 
 }

@@ -3,8 +3,8 @@ package org.mym.netdiag.tasks
 import android.content.Context
 import android.net.ConnectivityManager
 import android.telephony.TelephonyManager
-import org.mym.netdiag.ProgressListener
-import org.mym.netdiag.Task
+import org.mym.netdiag.api.ProgressListener
+import org.mym.netdiag.api.Task
 
 /**
  * This task detect the connectivity and network type for current device.

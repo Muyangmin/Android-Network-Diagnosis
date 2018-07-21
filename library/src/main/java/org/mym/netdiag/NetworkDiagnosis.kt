@@ -3,6 +3,7 @@ package org.mym.netdiag
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
+import org.mym.netdiag.api.*
 import kotlin.concurrent.thread
 
 object NetworkDiagnosis {
@@ -14,7 +15,7 @@ object NetworkDiagnosis {
     /**
      * Use this property to customize your logger implementations.
      */
-    var logger = object : Logger{
+    var logger = object : Logger {
         override fun debug(message: String) {
             Log.d(LOG_TAG, message)
         }
@@ -50,25 +51,44 @@ object NetworkDiagnosis {
     @JvmStatic
     @JvmOverloads
     fun <T> execute(task: Task<T>,
+                    startListener: StartListener? = null,
                     progressListener: ProgressListener? = null,
                     errorListener: ErrorListener? = null,
                     resultListener: ResultListener<T>) {
+        execute(task, SimpleTaskListener(startListener, progressListener, resultListener, errorListener))
+    }
+
+    /**
+     * Execute a diagnosis task.
+     *
+     * @param[task] Arbitrary instance of [Task].
+     * @param[taskListener] Optional listener for teh task. It is strongly recommended to use [SimpleTaskListener].
+     */
+    fun <T> execute(task: Task<T>, taskListener: TaskListener<T>? = null) {
         log4Debug("Enqueued task $task")
         executor.doInBackground {
             log4Debug("Started task $task")
             try {
-                val result = task.run(progressListener)
+                taskListener?.onTaskStarted()
+                val result = task.run(wrapProgressListener { taskListener?.onTaskProgressChanged(it) })
                 log4Debug("Task $task returned as: $result")
                 executor.doInMainThread {
-                    resultListener.invoke(result)
+                    taskListener?.onTaskFinished(result)
                 }
             } catch (e: Exception) {
                 log4Warn("Task $task throws an exception: $e")
                 executor.doInMainThread {
-                    errorListener?.invoke(e)
+                    taskListener?.onTaskError(e)
                 }
             }
         }
     }
 
+    private fun wrapProgressListener(action: (ProgressListener)): (ProgressListener)? {
+        return { progress: Int ->
+            NetworkDiagnosis.executor.doInMainThread {
+                action.invoke(progress)
+            }
+        }
+    }
 }

@@ -1,6 +1,9 @@
 package org.mym.netdiag.tasks
 
-import org.mym.netdiag.*
+import org.mym.netdiag.api.ProgressListener
+import org.mym.netdiag.api.Task
+import org.mym.netdiag.log4Debug
+import org.mym.netdiag.log4Warn
 import java.io.InputStreamReader
 
 /**

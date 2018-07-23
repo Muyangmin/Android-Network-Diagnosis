@@ -57,16 +57,23 @@ class TaskChain {
                     }
 
                     override fun onTaskFinished(result: T) {
+                        //Do not execute callback if task is already aborted in some time
                         if (!isAborted) {
-                            doNextAction()
                             taskListener.onTaskFinished(result)
+                            //Task listener may immediately abort the chain, so need to recheck
+                            if (!isAborted) {
+                                doNextAction()
+                            }
                         }
                     }
 
                     override fun onTaskError(e: Exception) {
                         if (!isAborted) {
                             taskListener.onTaskError(e)
-                            doNextAction()
+                            //Task listener may immediately abort the chain, so need to recheck
+                            if (!isAborted) {
+                                doNextAction()
+                            }
                         }
                     }
                 })
